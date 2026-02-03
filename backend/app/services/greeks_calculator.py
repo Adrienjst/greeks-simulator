@@ -1,5 +1,15 @@
 import numpy as np
-from scipy.stats import norm
+import numpy as np
+from math import sqrt, exp, log, erf
+
+def norm_cdf(x):
+    """Standard normal cumulative distribution function"""
+    return 0.5 * (1.0 + erf(x / sqrt(2.0)))
+
+def norm_pdf(x):
+    """Standard normal probability density function"""
+    return exp(-0.5 * x * x) / sqrt(2.0 * np.pi)
+
 from typing import Dict
 
 class BlackScholesCalculator:
