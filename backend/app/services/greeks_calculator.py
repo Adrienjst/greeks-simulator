@@ -1,16 +1,17 @@
 import numpy as np
-import numpy as np
 from math import sqrt, exp, log, erf
+from typing import Dict
+
 
 def norm_cdf(x):
     """Standard normal cumulative distribution function"""
     return 0.5 * (1.0 + erf(x / sqrt(2.0)))
 
+
 def norm_pdf(x):
     """Standard normal probability density function"""
     return exp(-0.5 * x * x) / sqrt(2.0 * np.pi)
 
-from typing import Dict
 
 class BlackScholesCalculator:
     """Calculate option Greeks using Black-Scholes model"""
@@ -31,33 +32,33 @@ class BlackScholesCalculator:
         d2 = d1 - sigma * np.sqrt(T)
         
         if option_type.lower() == 'call':
-            delta = np.exp(-q * T) * norm.cdf(d1)
-            price = S * np.exp(-q * T) * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
+            delta = np.exp(-q * T) * norm_cdf(d1)
+            price = S * np.exp(-q * T) * norm_cdf(d1) - K * np.exp(-r * T) * norm_cdf(d2)
         else:  # put
-            delta = np.exp(-q * T) * (norm.cdf(d1) - 1)
-            price = K * np.exp(-r * T) * norm.cdf(-d2) - S * np.exp(-q * T) * norm.cdf(-d1)
+            delta = np.exp(-q * T) * (norm_cdf(d1) - 1)
+            price = K * np.exp(-r * T) * norm_cdf(-d2) - S * np.exp(-q * T) * norm_cdf(-d1)
         
         # Gamma (same for call and put)
-        gamma = np.exp(-q * T) * norm.pdf(d1) / (S * sigma * np.sqrt(T))
+        gamma = np.exp(-q * T) * norm_pdf(d1) / (S * sigma * np.sqrt(T))
         
         # Vega (same for call and put, per 1% change in volatility)
-        vega = S * np.exp(-q * T) * norm.pdf(d1) * np.sqrt(T) / 100
+        vega = S * np.exp(-q * T) * norm_pdf(d1) * np.sqrt(T) / 100
         
         # Rho
         if option_type.lower() == 'call':
-            rho = K * T * np.exp(-r * T) * norm.cdf(d2) / 100
+            rho = K * T * np.exp(-r * T) * norm_cdf(d2) / 100
         else:
-            rho = -K * T * np.exp(-r * T) * norm.cdf(-d2) / 100
+            rho = -K * T * np.exp(-r * T) * norm_cdf(-d2) / 100
         
         # Theta (per day, so divide by 365)
         if option_type.lower() == 'call':
-            theta = (-S * np.exp(-q * T) * norm.pdf(d1) * sigma / (2 * np.sqrt(T)) 
-                     - r * K * np.exp(-r * T) * norm.cdf(d2) 
-                     + q * S * np.exp(-q * T) * norm.cdf(d1)) / 365
+            theta = (-S * np.exp(-q * T) * norm_pdf(d1) * sigma / (2 * np.sqrt(T)) 
+                     - r * K * np.exp(-r * T) * norm_cdf(d2) 
+                     + q * S * np.exp(-q * T) * norm_cdf(d1)) / 365
         else:
-            theta = (-S * np.exp(-q * T) * norm.pdf(d1) * sigma / (2 * np.sqrt(T))
-                     + r * K * np.exp(-r * T) * norm.cdf(-d2)
-                     - q * S * np.exp(-q * T) * norm.cdf(-d1)) / 365
+            theta = (-S * np.exp(-q * T) * norm_pdf(d1) * sigma / (2 * np.sqrt(T))
+                     + r * K * np.exp(-r * T) * norm_cdf(-d2)
+                     - q * S * np.exp(-q * T) * norm_cdf(-d1)) / 365
         
         return {
             "delta": float(delta),

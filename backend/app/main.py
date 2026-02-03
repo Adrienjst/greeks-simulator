@@ -5,7 +5,7 @@ from app.database import engine, Base
 import os
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Derivatives Greeks Simulator & Backtester",
